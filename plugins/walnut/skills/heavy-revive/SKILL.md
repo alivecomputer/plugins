@@ -290,3 +290,9 @@ Present results in bordered blocks in this order. If agents return out of order,
 │  [agent 5 output]
 ╰─
 ```
+
+---
+
+## Synthesis
+
+After all five dimension blocks are presented, close with a `╭─ 🐿️ revive — summary` block. Written by the squirrel directly — no extra agent. Distil the five outputs into a concise briefing that captures what happened, where things stand, and what comes next. Keep it short. The dimension blocks are the depth; the summary is the landing.
