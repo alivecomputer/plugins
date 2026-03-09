@@ -70,8 +70,19 @@ fi
 # Check if this is the boot render (no activity file yet = first response hasn't happened)
 ACTIVITY_FILE="/tmp/alive-activity-${SESSION_ID}"
 if [ ! -f "$ACTIVITY_FILE" ]; then
-  # ── BOOT MESSAGE ──
-  echo -e "${DIM}${MODEL}${RESET} ${DIM}|${RESET} ${COPPER}🐿️${RESET} ${GREEN}${BOLD}squirrel ready to stash${RESET} ${DIM}|${RESET} 🌰 ${DIM}${WALNUT_COUNT} walnuts available${RESET} ${DIM}|${RESET} ${COPPER}your context compounds from here${RESET}"
+  # ── BOOT MESSAGE — rotates tip each render ──
+  TIPS=(
+    "${COPPER}your context compounds from here${RESET}"
+    "${DIM}/alive:world${RESET} ${DIM}— view your world${RESET}"
+    "${DIM}/alive:open${RESET} ${DIM}— lock in on one walnut${RESET}"
+    "${DIM}/alive:save${RESET} ${DIM}— checkpoint, compound context${RESET}"
+    "${DIM}/alive:housekeeping${RESET} ${DIM}— clean your world${RESET}"
+    "${DIM}/alive:capture${RESET} ${DIM}— bring context in${RESET}"
+    "${DIM}/alive:find${RESET} ${DIM}— search everything${RESET}"
+    "${DIM}/alive:recall${RESET} ${DIM}— revive past sessions${RESET}"
+  )
+  TIP_INDEX=$(( $(date +%s) % ${#TIPS[@]} ))
+  echo -e "${DIM}${MODEL}${RESET} ${DIM}|${RESET} ${COPPER}🐿️${RESET} ${GREEN}${BOLD}squirrel ready to stash${RESET} ${DIM}|${RESET} 🌰 ${DIM}${WALNUT_COUNT} walnuts${RESET} ${DIM}|${RESET} ${TIPS[$TIP_INDEX]}"
   exit 0
 fi
 
