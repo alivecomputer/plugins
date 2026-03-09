@@ -1,6 +1,6 @@
 #!/bin/bash
 # Hook: Session Resume — SessionStart (resume)
-# Reads squirrel entry by session_id, re-injects stash + preferences.
+# Reads squirrel entry by session_id, re-injects rules + stash + preferences.
 
 set -euo pipefail
 
@@ -17,6 +17,34 @@ SESSION_ID="${HOOK_SESSION_ID}"
 source "$SCRIPT_DIR/alive-resolve-preferences.sh"
 PREFS=$(resolve_preferences "$WORLD_ROOT")
 
+# Plugin root for reading rules
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+
+# Build runtime rules from plugin source files (same as session-new)
+RUNTIME_RULES=""
+RULE_COUNT=0
+RULE_NAMES=""
+
+if [ -f "$PLUGIN_ROOT/CLAUDE.md" ]; then
+  RUNTIME_RULES=$(cat "$PLUGIN_ROOT/CLAUDE.md")
+fi
+
+for rule_file in "$PLUGIN_ROOT/rules/"*.md; do
+  if [ -f "$rule_file" ]; then
+    RULE_COUNT=$((RULE_COUNT + 1))
+    RULE_NAME=$(basename "$rule_file" .md)
+    RULE_NAMES="${RULE_NAMES}${RULE_NAMES:+, }${RULE_NAME}"
+    RUNTIME_RULES="${RUNTIME_RULES}
+
+$(cat "$rule_file")"
+  fi
+done
+
+# Preamble
+PREAMBLE="<EXTREMELY_IMPORTANT>
+The following are your core operating rules for the ALIVE system. They are MANDATORY — not suggestions, not defaults, not guidelines. You MUST follow them in every response, every tool call, every session.
+</EXTREMELY_IMPORTANT>"
+
 # Find squirrel entry by session_id (exact match) or fall back to most recent unsigned
 SQUIRRELS_DIR="$WORLD_ROOT/.alive/_squirrels"
 ENTRY=""
@@ -26,6 +54,7 @@ elif [ -d "$SQUIRRELS_DIR" ]; then
   ENTRY=$(grep -rl 'ended: null' "$SQUIRRELS_DIR/"*.yaml 2>/dev/null | head -1)
 fi
 
+SESSION_MSG=""
 if [ -n "$ENTRY" ] && [ -f "$ENTRY" ]; then
   ENTRY_SESSION_ID=$(grep '^session_id:' "$ENTRY" | head -1 | sed 's/session_id: *//' || true)
   WALNUT=$(grep '^walnut:' "$ENTRY" | head -1 | sed 's/walnut: *//' || true)
@@ -36,16 +65,38 @@ if [ -n "$ENTRY" ] && [ -f "$ENTRY" ]; then
     STASH="(empty)"
   fi
 
-  cat << EOF
-ALIVE session resumed. Session ID: ${ENTRY_SESSION_ID:-unknown}
+  SESSION_MSG="ALIVE session resumed. Session ID: ${ENTRY_SESSION_ID:-unknown}
+World: $WORLD_ROOT
 Walnut: ${WALNUT:-none}
+Model: $HOOK_MODEL
 $PREFS
+Rules: ${RULE_COUNT} loaded (${RULE_NAMES})
 Previous stash:
-$STASH
-EOF
+$STASH"
 else
-  cat << EOF
-ALIVE session resumed. No matching entry found — clean start.
+  SESSION_MSG="ALIVE session resumed. No matching entry found — clean start.
+World: $WORLD_ROOT
+Model: $HOOK_MODEL
 $PREFS
-EOF
+Rules: ${RULE_COUNT} loaded (${RULE_NAMES})"
 fi
+
+# Escape and combine
+SESSION_MSG_ESCAPED=$(escape_for_json "$SESSION_MSG")
+PREAMBLE_ESCAPED=$(escape_for_json "$PREAMBLE")
+RUNTIME_ESCAPED=$(escape_for_json "$RUNTIME_RULES")
+
+CONTEXT="${SESSION_MSG_ESCAPED}\n\n${PREAMBLE_ESCAPED}\n\n${RUNTIME_ESCAPED}"
+
+# Output JSON with additionalContext
+cat <<HOOKEOF
+{
+  "additional_context": "${CONTEXT}",
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "${CONTEXT}"
+  }
+}
+HOOKEOF
+
+exit 0

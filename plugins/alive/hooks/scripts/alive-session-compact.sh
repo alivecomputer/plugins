@@ -1,6 +1,6 @@
 #!/bin/bash
 # Hook: Session Compact — SessionStart (compact)
-# Re-injects stash + walnut context + preferences after compaction.
+# Re-injects rules + stash + walnut context + preferences after compaction.
 
 set -euo pipefail
 
@@ -16,6 +16,34 @@ SESSION_ID="${HOOK_SESSION_ID}"
 # Resolve preferences
 source "$SCRIPT_DIR/alive-resolve-preferences.sh"
 PREFS=$(resolve_preferences "$WORLD_ROOT")
+
+# Plugin root for reading rules
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+
+# Build runtime rules from plugin source files (same as session-new)
+RUNTIME_RULES=""
+RULE_COUNT=0
+RULE_NAMES=""
+
+if [ -f "$PLUGIN_ROOT/CLAUDE.md" ]; then
+  RUNTIME_RULES=$(cat "$PLUGIN_ROOT/CLAUDE.md")
+fi
+
+for rule_file in "$PLUGIN_ROOT/rules/"*.md; do
+  if [ -f "$rule_file" ]; then
+    RULE_COUNT=$((RULE_COUNT + 1))
+    RULE_NAME=$(basename "$rule_file" .md)
+    RULE_NAMES="${RULE_NAMES}${RULE_NAMES:+, }${RULE_NAME}"
+    RUNTIME_RULES="${RUNTIME_RULES}
+
+$(cat "$rule_file")"
+  fi
+done
+
+# Preamble
+PREAMBLE="<EXTREMELY_IMPORTANT>
+The following are your core operating rules for the ALIVE system. They are MANDATORY — not suggestions, not defaults, not guidelines. You MUST follow them in every response, every tool call, every session.
+</EXTREMELY_IMPORTANT>"
 
 # Find squirrel entry by session_id or fall back
 SQUIRRELS_DIR="$WORLD_ROOT/.alive/_squirrels"
@@ -47,9 +75,11 @@ if [ -n "${WALNUT:-}" ] && [ "$WALNUT" != "null" ]; then
   fi
 fi
 
-cat << EOF
-CONTEXT RESTORED after compaction. Session: ${SESSION_ID:-unknown} | Walnut: ${WALNUT:-none}
+SESSION_MSG="CONTEXT RESTORED after compaction. Session: ${SESSION_ID:-unknown} | Walnut: ${WALNUT:-none}
+World: $WORLD_ROOT
+Model: $HOOK_MODEL
 $PREFS
+Rules: ${RULE_COUNT} loaded (${RULE_NAMES})
 
 Stash recovered:
 $STASH
@@ -60,5 +90,24 @@ ${NOW_CONTENT:-no now.md found}
 Identity:
 ${KEY_CONTENT:-no key.md found}
 
-IMPORTANT: Re-read _core/key.md, _core/now.md, _core/tasks.md before continuing work. Do not trust memory of files read before compaction.
-EOF
+IMPORTANT: Re-read _core/key.md, _core/now.md, _core/tasks.md before continuing work. Do not trust memory of files read before compaction."
+
+# Escape and combine
+SESSION_MSG_ESCAPED=$(escape_for_json "$SESSION_MSG")
+PREAMBLE_ESCAPED=$(escape_for_json "$PREAMBLE")
+RUNTIME_ESCAPED=$(escape_for_json "$RUNTIME_RULES")
+
+CONTEXT="${SESSION_MSG_ESCAPED}\n\n${PREAMBLE_ESCAPED}\n\n${RUNTIME_ESCAPED}"
+
+# Output JSON with additionalContext
+cat <<HOOKEOF
+{
+  "additional_context": "${CONTEXT}",
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "${CONTEXT}"
+  }
+}
+HOOKEOF
+
+exit 0
