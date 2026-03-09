@@ -47,6 +47,10 @@ fi
 SHORT_ID="${SESSION_ID:0:8}"
 ENTRY="$WORLD_ROOT/.alive/_squirrels/$SESSION_ID.yaml"
 
+# Wait briefly for SessionStart hook to finish writing the YAML
+if [ ! -f "$ENTRY" ]; then
+  sleep 0.2
+fi
 if [ ! -f "$ENTRY" ]; then
   echo -e "${YELLOW}⚠ alive: session not registered${RESET} ${DIM}— context not compounding. Check plugin: /alive:world${RESET}"
   exit 0
