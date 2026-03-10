@@ -30,7 +30,16 @@ if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
   echo "ALIVE_WORLD_ROOT=$WORLD_ROOT" >> "$CLAUDE_ENV_FILE"
 fi
 
-# Write squirrel entry to .alive/_squirrels/
+# Plugin root for reading rules and statusline
+PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
+
+# Quick-count rule files (no content reading) so YAML has correct count immediately
+RULE_COUNT=0
+for rule_file in "$PLUGIN_ROOT/rules/"*.md; do
+  [ -f "$rule_file" ] && RULE_COUNT=$((RULE_COUNT + 1))
+done
+
+# Write squirrel entry FIRST with correct count (statusline reads this concurrently)
 SQUIRRELS_DIR="$WORLD_ROOT/.alive/_squirrels"
 mkdir -p "$SQUIRRELS_DIR"
 ENTRY_FILE="$SQUIRRELS_DIR/$SESSION_ID.yaml"
@@ -44,7 +53,7 @@ ended: null
 signed: false
 transcript: ${HOOK_TRANSCRIPT}
 cwd: ${HOOK_CWD}
-rules_loaded: 0
+rules_loaded: $RULE_COUNT
 stash: []
 working: []
 EOF
@@ -52,9 +61,6 @@ EOF
 # Resolve preferences
 source "$SCRIPT_DIR/alive-resolve-preferences.sh"
 PREFS=$(resolve_preferences "$WORLD_ROOT")
-
-# Plugin root for reading rules and statusline
-PLUGIN_ROOT="${CLAUDE_PLUGIN_ROOT:-$(cd "$SCRIPT_DIR/../.." && pwd)}"
 
 # Copy statusline script to stable location if not present or outdated
 STATUSLINE_SRC="$PLUGIN_ROOT/statusline/alive-statusline.sh"
@@ -66,7 +72,7 @@ if [ -f "$STATUSLINE_SRC" ]; then
   fi
 fi
 
-# Build runtime rules from plugin source files
+# Now read rule contents for injection (slow part — after YAML is written)
 RUNTIME_RULES=""
 RULE_COUNT=0
 RULE_NAMES=""
@@ -85,15 +91,6 @@ for rule_file in "$PLUGIN_ROOT/rules/"*.md; do
 $(cat "$rule_file")"
   fi
 done
-
-# Update squirrel YAML with actual rule count (was 0 at creation time)
-if [ -f "$ENTRY_FILE" ]; then
-  if sed --version >/dev/null 2>&1; then
-    sed -i "s/rules_loaded: 0/rules_loaded: $RULE_COUNT/" "$ENTRY_FILE"
-  else
-    sed -i '' "s/rules_loaded: 0/rules_loaded: $RULE_COUNT/" "$ENTRY_FILE"
-  fi
-fi
 
 # Preamble
 PREAMBLE="<EXTREMELY_IMPORTANT>
