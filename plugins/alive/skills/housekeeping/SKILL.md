@@ -27,6 +27,8 @@ Phase 3: Deep Audit (one walnut, 10 checks — parallel subagents)
 
 Housekeeping is read-heavy. Every phase uses subagents to keep the main context clean.
 
+**All subagents MUST use `subagent_type: "Explore"`** — not general-purpose. Explore agents have direct file read access without needing Bash. General-purpose agents attempt Bash for file reads, which is denied when running in the background. This is a hard constraint of Claude Code's permission model.
+
 - **Phase 1:** Dispatch all 6 root checks as parallel subagents. Wait for all. Present results together — one line per passing check, expand on failures only.
 - **Phase 2:** Single subagent reads all walnut frontmatter, returns the health table.
 - **Phase 3:** Dispatch all 10 checks as parallel subagents (one check per subagent). Wait for all. Present results together — passing checks collapsed, failures expanded one at a time.
