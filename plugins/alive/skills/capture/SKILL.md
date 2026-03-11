@@ -1,5 +1,5 @@
 ---
-description: "Something arrived from outside the system — pasted, uploaded, forwarded, or researched. The squirrel doesn't decide if it's worth keeping. It notices and offers. The human decides what enters the world. Stores raw content, writes a structured companion, extracts tasks and insights into the stash."
+description: "Use when external content arrives in the session — emails, transcripts, screenshots, documents, files, or in-session research worth keeping. Also use when there's nothing obvious to capture — the skill checks 03_Inputs/ for unrouted files and enters inbox scan mode. Stores raw content, writes a structured companion, extracts tasks and insights into the stash."
 user-invocable: true
 ---
 
@@ -22,6 +22,8 @@ If capture is hard, people skip it. If people skip it, the system dies. Capture 
 - Research completed during a session
 - The human says "capture this" or "add this"
 - Squirrel detects external content and offers to capture
+- The human says "check inbox", "clear inputs", or "what's in my inbox"
+- Capture is invoked with no obvious in-conversation content (triggers inbox fallback — see Inbox Scan Mode below)
 
 **Capture is one of two operations that writes mid-session** (the other is _working/ drafts). Everything else waits for save.
 
@@ -105,6 +107,34 @@ The squirrel offers deep capture for content that's clearly rich:
 │  This looks rich. Deep extract for decisions + tasks?
 ╰─
 ```
+
+---
+
+## Inbox Scan Mode
+
+When capture is invoked with **no content in the conversation** — no pasted text, no dropped file, no "capture this" — fall back to checking `03_Inputs/`.
+
+If empty: "Nothing to capture, and your inbox is clear."
+
+If items exist, enter inbox scan:
+
+1. **List** — scan `03_Inputs/` for non-system files (exclude `.DS_Store`, `.gitkeep`). Present numbered list with detected type and filename.
+2. **Process** — for each selected item: read the file, suggest destination walnut + reference type, rename garbage filenames per conventions, present for confirmation or redirect.
+3. **Capture** — standard flow: move raw to `{walnut}/_core/_references/{type}/raw/`, write companion, stash insights/tasks, remove original from `03_Inputs/`.
+4. **Continue or stop** — after each item: "N remaining. Next, or done for now?" Partial clearing is fine.
+
+```
+╭─ 🐿️ inbox (3 items)
+│
+│  1. quarterly-report.pdf          document
+│  2. IMG_4892.jpg                  screenshot
+│  3. meeting-notes-kai.txt         transcript
+│
+│  Pick one, several (1,3), or "all".
+╰─
+```
+
+Explicit inbox triggers (skip content check): "check inbox", "clear inputs", "what's in my inbox".
 
 ---
 
