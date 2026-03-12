@@ -15,90 +15,81 @@ Not a list (that's the tree in alive:world). Not a search (that's alive:find). M
 
 ### 1. Generate the World Index
 
-Walk all walnuts. For each, read frontmatter from `_core/key.md` and `_core/_capsules/*/companion.md`.
+Run `.alive/scripts/generate-index.py` to walk all walnuts and collect frontmatter. If the script doesn't exist in the world yet, copy it from the plugin (`scripts/generate-index.py`) or inline the logic.
 
-**Backward compat:** If `_core/` doesn't exist, check walnut root for system files. If `_core/_capsules/` doesn't exist, fall back to scanning `_core/_working/` and `_core/_references/`.
-
-Collected data per walnut:
-- Name, type, goal, phase, health, rhythm, tags
-- People (from `_core/key.md` `people:` field)
-- Links (from `_core/key.md` `links:` field)
-- Parent (from `_core/key.md` `parent:` field)
-- Capsules (from `_core/_capsules/*/companion.md` frontmatter — name, status, goal)
-- Last updated (from `_core/now.md` `updated:` field)
-
-Write the index to `.alive/_index.yaml`:
-
-```yaml
-generated: 2026-03-12T14:30:00Z
-version: 1.0
-stats:
-  walnuts: 14
-  people: 23
-  capsules: 31
-  inputs: 2
-  sessions: 47
-
-walnuts:
-  nova-station:
-    type: venture
-    goal: "Build the first civilian orbital tourism platform"
-    domain: 04_Ventures
-    phase: testing
-    health: active
-    rhythm: weekly
-    updated: 2026-03-10
-    tags: [space, tourism, engineering]
-    people: [jax-stellara, dr-elara-voss, ryn-okata]
-    links: [glass-cathedral, walnut-plugin]
-    parent: null
-    capsules:
-      shielding-review: { status: draft, goal: "Evaluate radiation shielding vendors" }
-      launch-checklist: { status: prototype, goal: "Pre-launch safety checklist" }
+```bash
+python3 .alive/scripts/generate-index.py
 ```
+
+The script walks all directories for `key.md` files, handling both `_core/key.md` (new structure) and root-level `key.md` (flat/legacy structure). It deduplicates entries and skips template walnuts.
+
+**Collected data per walnut:**
+- Name, type, goal, phase, rhythm, tags
+- People (from `key.md` `people:` field — multi-line list)
+- Links (from `key.md` `links:` field — wikilink extraction)
+- Parent (from `key.md` `parent:` field)
+- Capsules (from `_capsules/*/companion.md` frontmatter — name, status, goal)
+- Last updated (from `now.md` `updated:` field)
+
+**Outputs:**
+- `.alive/_index.yaml` — human-readable world index
+- `.alive/_index.json` — machine-readable for graph consumption
 
 ### 2. Render the Graph
 
-Generate an interactive force-directed graph using D3.js. Write to `.alive/context-graph.html`.
+Run `.alive/scripts/generate-graph.py` to read the JSON index and generate an interactive D3.js graph.
+
+```bash
+python3 .alive/scripts/generate-graph.py
+```
+
+The graph is written to `.alive/context-graph.html` — a self-contained HTML file with embedded data, D3.js from CDN, and custom fonts from Fontshare/Google Fonts.
+
+**Theme:** ALIVE branded. Light mode default (cream #FAF8F5, orange primary #F97316). Dark mode toggle (forest green #0A1F0D, copper #B87333 accents). Custom fonts: Array (display), Khand (headings), Inter (body).
 
 **Nodes:**
-- Walnuts (primary nodes — largest)
-- People (medium nodes — connected to walnuts they appear in)
-- Capsules (small nodes — nested under their walnut)
-- Tags (tiny nodes — shared connections between walnuts)
+- Walnuts (primary nodes — sized by capsule count and recency)
+- People (toggle — shown for people who connect 2+ walnuts)
+- Capsules (expandable — click a walnut to show its capsules as orbiting nodes)
+- Central "Ben Flint" node connecting top-level walnuts
+- Inputs buffer node showing unrouted count
 
 **Edges:**
 - `links:` field connections between walnuts
-- `parent:` -> child relationships (thicker line)
-- Person -> walnut connections (from `people:` field)
-- `sources:` paths that cross capsule/walnut boundaries
-- Shared tags (light, dotted)
+- `parent:` → child relationships (dashed)
+- Person → walnut connections (dotted, when people shown)
+- Capsule → parent walnut (when expanded)
 
 **Color by ALIVE domain:**
-- Life = green
-- Ventures = blue
-- Experiments = purple
-- Archive = grey
-- People = warm amber
-- Inputs = orange
+- Life = blue
+- Ventures = orange
+- Experiments = green
+- Archive = warm gray
+- People = purple
+- Inputs = red
+
+Colors adapt per theme (lighter in dark mode for visibility).
 
 **Size by activity:**
-- Recently saved (last 7 days) = larger
-- Quiet (past rhythm) = normal
-- Waiting = smaller, dimmer
+- 15+ capsules = largest (20px)
+- 5+ capsules = large (15px)
+- Updated in last 2 days = medium-large (12px)
+- Updated in last week = medium (9px)
+- Stale = small (5px)
 
 **Health signals visible:**
-- Active = bright, full opacity
-- Quiet = 60% opacity
-- Waiting = 40% opacity, warning border
+- Active (recent) = full opacity, glow on today's updates
+- Quiet (1-2 weeks) = reduced opacity
+- Waiting (2+ weeks) = dim, small
+- Capsule-heavy walnuts get outer glow rings
 
 ### 3. Open in Browser
 
 ```
 ╭─ 🐿️ map generated
 │
-│  14 walnuts, 23 people, 31 capsules
-│  3 clusters detected: space-ventures, personal-growth, creative-experiments
+│  58 walnuts, 78 people, 41 capsules
+│  60 nodes, 36 links, 11 people connectors
 │
 │  ▸ Opening in browser...
 ╰─
@@ -110,25 +101,57 @@ Generate an interactive force-directed graph using D3.js. Write to `.alive/conte
 
 ### Interactive Controls
 
-- **Click node** -> show `_core/key.md` frontmatter summary in a side panel (goal, phase, people, recent activity)
-- **Hover** -> highlight all connected nodes and edges
-- **Drag** -> reposition nodes (physics simulation)
-- **Zoom + pan** -> navigate large worlds
-- **Double-click walnut** -> expand to show its capsules as nested nodes
+- **Hover node** → tooltip with goal, phase, capsule count, next action
+- **Hover node** → highlight all connected nodes and edges, dim everything else
+- **Click walnut** → expand capsules as orbiting nodes + open details panel
+- **Click node** → pin details panel (right sidebar) with full context
+- **Drag** → reposition nodes (physics simulation)
+- **Zoom + pan** → navigate large worlds
+- **Hover edge** → show connection type label (linked / parent → child / person name)
+- **Esc** → close details panel
 
-### Filters
+### Details Panel
 
-- **By domain:** Toggle Life / Ventures / Experiments / Archive visibility
-- **By tag:** Select a tag to highlight all walnuts sharing it
-- **By health:** Show only active / quiet / waiting
-- **By person:** Select a person to highlight their walnut connections
-- **Search:** Type a name to find and focus on a specific node
+Click any node to open a pinned side panel showing:
+- Name, domain badge, phase badge
+- Goal description
+- Metadata (rhythm, last updated, days since, session count)
+- Next action (highlighted)
+- Capsule list with status badges (draft/prototype/published/done)
+- Active capsule highlighted in primary color
+- People list
+- Tags
 
-### Layout Modes
+### Search
 
-- **Force-directed** (default) — organic clustering by connections
-- **Domain-grouped** — arranged by ALIVE domain (Life left, Ventures center, Experiments right)
-- **Timeline** — horizontal layout by last-updated date (most recent on right)
+- **`/` hotkey** → focus search box
+- Searches walnut names, goals, tags, and people
+- Matching nodes highlighted, everything else dims
+- **Esc** → clear search
+
+### Theme Toggle
+
+- Light mode default (ALIVE cream branding)
+- Dark mode toggle (forest green + copper)
+- Theme persists via localStorage
+- Sun/moon toggle in header
+
+### Controls
+
+- **reset view** → zoom to fit
+- **show people** → toggle people connector nodes
+- **labels on/off** → toggle node labels
+- **show archive** → toggle archived walnuts
+- **cluster** → group nodes by ALIVE domain with background labels
+
+### Capsule Expansion
+
+Click any walnut with capsules to expand them as orbiting nodes:
+- Capsule nodes sized by active status (active capsule = larger)
+- Capsule color by status: draft (gray), prototype (amber), done (green)
+- Active capsule has a highlighted stroke
+- Click the walnut again to collapse
+- Capsule details shown in the details panel
 
 ---
 
@@ -136,9 +159,13 @@ Generate an interactive force-directed graph using D3.js. Write to `.alive/conte
 
 | File | Purpose |
 |------|---------|
-| `.alive/_index.yaml` | Generated world index — all frontmatter in one file |
-| `.alive/context-graph.html` | Interactive D3.js graph — self-contained HTML |
-| `.alive/scripts/generate-index.py` | Index generator script (if exists, run it; otherwise inline the logic) |
+| `.alive/_index.yaml` | Generated world index — human-readable, all frontmatter |
+| `.alive/_index.json` | Generated world index — JSON for graph consumption |
+| `.alive/context-graph.html` | Interactive D3.js graph — self-contained, ALIVE branded |
+| `.alive/scripts/generate-index.py` | Index generator (walks tree, reads frontmatter, outputs YAML + JSON) |
+| `.alive/scripts/generate-graph.py` | Graph generator (reads JSON index, outputs branded HTML with D3.js) |
+
+**Plugin source:** Both scripts ship with the plugin at `scripts/generate-index.py` and `scripts/generate-graph.py`. On first `alive:map` invocation, copy them to `.alive/scripts/` if not already present.
 
 ---
 
