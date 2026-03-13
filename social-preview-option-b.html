@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  /* GitHub social preview: 1280x640 — Terminal card */
+  body { margin: 0; padding: 0; background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  .card {
+    width: 1280px; height: 640px;
+    display: flex; align-items: center; justify-content: center;
+    background: #0a0a0a;
+    position: relative;
+  }
+  .terminal {
+    background: #111; border: 1px solid #222; border-radius: 16px;
+    padding: 48px 56px; width: 800px;
+    font-family: 'JetBrains Mono', 'SF Mono', monospace;
+    position: relative;
+  }
+  .terminal::before {
+    content: ''; position: absolute; top: 16px; left: 20px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #c87533;
+    box-shadow: 20px 0 0 #555, 40px 0 0 #333;
+  }
+  .block {
+    margin-top: 16px;
+  }
+  .border-top { color: #c87533; font-size: 16px; }
+  .border-mid { color: #c87533; font-size: 16px; line-height: 1.8; }
+  .border-bot { color: #c87533; font-size: 16px; }
+  .content { color: #ccc; }
+  .dim { color: #666; }
+  .copper { color: #c87533; }
+  .arrow { color: #c87533; font-weight: bold; }
+  .num { color: #888; }
+
+  .right-text {
+    position: absolute; right: 56px; top: 50%;
+    transform: translateY(-50%);
+    text-align: right;
+  }
+  .right-text h2 {
+    font-size: 36px; font-weight: 700; color: #f0f0f0;
+    margin: 0 0 8px; letter-spacing: -0.5px;
+  }
+  .right-text p {
+    font-size: 15px; color: #666; margin: 0;
+  }
+
+  .brand {
+    position: absolute; bottom: 28px; left: 40px;
+    font-size: 14px; color: #333; letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <div style="display: flex; align-items: center; gap: 64px; padding: 0 64px;">
+    <div class="terminal">
+      <div class="block">
+        <div class="border-top">&#x256D;&#x2500; &#x1F43F;&#xFE0F; spotted</div>
+        <div class="border-mid">&#x2502;  <span class="content">Ryn hasn't replied about the shielding review</span></div>
+        <div class="border-mid">&#x2502;  <span class="content">and the deadline is Thursday. 2 telemetry</span></div>
+        <div class="border-mid">&#x2502;  <span class="content">reports from her team sitting in email.</span></div>
+        <div class="border-mid">&#x2502;</div>
+        <div class="border-mid">&#x2502;  <span class="arrow">&#x25B8;</span> <span class="content">What next?</span></div>
+        <div class="border-mid">&#x2502;  <span class="num">1.</span> <span class="content">Load Ryn's context</span></div>
+        <div class="border-mid">&#x2502;  <span class="num">2.</span> <span class="content">Draft a follow-up</span></div>
+        <div class="border-mid">&#x2502;  <span class="num">3.</span> <span class="content">Review telemetry first</span></div>
+        <div class="border-bot">&#x2570;&#x2500;</div>
+      </div>
+    </div>
+    <div style="text-align: left; max-width: 320px;">
+      <h2 style="font-size: 32px; font-weight: 700; color: #f0f0f0; margin: 0 0 12px; letter-spacing: -0.5px; font-family: -apple-system, sans-serif;">The context layer your AI is missing.</h2>
+      <p style="font-size: 15px; color: #666; margin: 0; line-height: 1.6; font-family: -apple-system, sans-serif;">One install for Claude Code. Plain files. Every session compounds.</p>
+    </div>
+  </div>
+  <div class="brand">Alive Computer</div>
+</div>
+</body>
+</html>

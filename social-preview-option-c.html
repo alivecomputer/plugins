@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  /* GitHub social preview: 1280x640 — Graph + tagline */
+  body { margin: 0; padding: 0; background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  .card {
+    width: 1280px; height: 640px;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    background: #0a0a0a;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Simulated graph nodes */
+  .node {
+    position: absolute; border-radius: 50%;
+    opacity: 0.6;
+  }
+  .edge {
+    position: absolute;
+    height: 1px; background: rgba(200,117,51,0.08);
+    transform-origin: left center;
+  }
+  /* Domain colors */
+  .life { background: #2d5a2d; box-shadow: 0 0 20px rgba(45,90,45,0.3); }
+  .venture { background: #2d4a6d; box-shadow: 0 0 20px rgba(45,74,109,0.3); }
+  .experiment { background: #5a2d6d; box-shadow: 0 0 20px rgba(90,45,109,0.3); }
+  .person { background: #c87533; box-shadow: 0 0 15px rgba(200,117,51,0.2); }
+
+  .overlay {
+    position: relative; z-index: 10;
+    text-align: center;
+  }
+  .overlay h1 {
+    font-size: 52px; font-weight: 700; color: #f0f0f0;
+    margin: 0 0 12px; letter-spacing: -1px;
+  }
+  .overlay p {
+    font-size: 20px; color: #888; margin: 0 0 32px;
+  }
+  .stats {
+    display: flex; gap: 48px; justify-content: center;
+  }
+  .stat {
+    text-align: center;
+  }
+  .stat-num {
+    font-size: 36px; font-weight: 700; color: #c87533;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-label {
+    font-size: 13px; color: #555; text-transform: uppercase;
+    letter-spacing: 1px; margin-top: 4px;
+  }
+  .brand {
+    position: absolute; bottom: 28px; right: 40px;
+    font-size: 14px; color: #333; letter-spacing: 2px;
+    text-transform: uppercase; z-index: 10;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <!-- Scattered graph nodes -->
+  <div class="node life" style="width:48px;height:48px;top:80px;left:120px;"></div>
+  <div class="node life" style="width:32px;height:32px;top:180px;left:200px;opacity:0.4;"></div>
+  <div class="node venture" style="width:56px;height:56px;top:100px;left:400px;"></div>
+  <div class="node venture" style="width:40px;height:40px;top:60px;left:550px;opacity:0.5;"></div>
+  <div class="node person" style="width:20px;height:20px;top:140px;left:320px;opacity:0.7;"></div>
+  <div class="node person" style="width:16px;height:16px;top:200px;left:480px;opacity:0.5;"></div>
+  <div class="node experiment" style="width:44px;height:44px;top:120px;left:900px;"></div>
+  <div class="node experiment" style="width:28px;height:28px;top:60px;left:780px;opacity:0.4;"></div>
+  <div class="node venture" style="width:36px;height:36px;top:180px;left:1050px;opacity:0.5;"></div>
+  <div class="node person" style="width:18px;height:18px;top:100px;left:700px;opacity:0.6;"></div>
+  <div class="node life" style="width:24px;height:24px;top:500px;left:150px;opacity:0.3;"></div>
+  <div class="node venture" style="width:52px;height:52px;top:460px;left:350px;opacity:0.5;"></div>
+  <div class="node experiment" style="width:30px;height:30px;top:520px;left:600px;opacity:0.4;"></div>
+  <div class="node person" style="width:22px;height:22px;top:480px;left:800px;opacity:0.5;"></div>
+  <div class="node life" style="width:38px;height:38px;top:440px;left:1000px;opacity:0.4;"></div>
+  <div class="node venture" style="width:26px;height:26px;top:540px;left:1100px;opacity:0.3;"></div>
+
+  <!-- Edges (simplified) -->
+  <div class="edge" style="width:180px;top:104px;left:168px;transform:rotate(5deg);"></div>
+  <div class="edge" style="width:120px;top:128px;left:428px;transform:rotate(-15deg);"></div>
+  <div class="edge" style="width:200px;top:88px;left:570px;transform:rotate(8deg);"></div>
+  <div class="edge" style="width:150px;top:142px;left:900px;transform:rotate(-5deg);"></div>
+  <div class="edge" style="width:160px;top:486px;left:402px;transform:rotate(10deg);"></div>
+  <div class="edge" style="width:180px;top:510px;left:630px;transform:rotate(-8deg);"></div>
+
+  <div class="overlay">
+    <h1>The context layer your AI is missing.</h1>
+    <p>One install for Claude Code. Every session compounds.</p>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">58</div>
+        <div class="stat-label">Walnuts</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">78</div>
+        <div class="stat-label">People</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">41</div>
+        <div class="stat-label">Capsules</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">66</div>
+        <div class="stat-label">Sessions</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="brand">Alive Computer</div>
+</div>
+</body>
+</html>

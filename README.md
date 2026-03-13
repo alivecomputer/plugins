@@ -2,17 +2,17 @@
   <img src="alivecomputer-logo.png" alt="Alive Computer" width="600">
 </p>
 
-[![Version](https://img.shields.io/badge/version-1.0.1--beta-copper)](https://github.com/alivecomputer/marketplace/releases)
+[![Version](https://img.shields.io/badge/version-1.0.1--beta-copper)](https://github.com/alivecomputer/context/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Built for Claude Code](https://img.shields.io/badge/built%20for-Claude%20Code-blueviolet)](https://docs.anthropic.com/en/docs/claude-code)
 
 # ALIVE
 
-**Personal Private Context Infrastructure**
+**The context layer your AI is missing.**
 
-Your context is your property. ALIVE turns your local file system into a structured, persistent world that any AI agent can read, work in, and hand off — without cloud dependency, vendor lock, or data leaving your machine.
+One install for Claude Code. Plain files on your machine. Every session compounds.
 
-Plain markdown files. A caretaker runtime. 12 skills. Your computer, alive.
+<!-- TODO: demo visual goes here -->
 
 ## Install
 
@@ -22,129 +22,54 @@ claude plugin install alive@alivecomputer
 
 Then start a session and type `/alive:world`.
 
-## What You Get
+---
 
-- **12 skills** for managing your world
-- **6 rules** that define caretaker behavior
-- **12 hooks** for session lifecycle, log protection, archive enforcement, stash preservation
-- **Templates** for walnuts, capsules, companions, and system files
-- **Onboarding** that scaffolds your world on first run
+## What changes
+
+**Works with everything.**
+ALIVE is the context layer, not the agent. OpenClaw can traverse it. Codex can read it. Any harness, any model. Give your agents a save button and a memory that outlasts the session.
+
+**Your AI starts knowing you.**
+Every session loads your people, your decisions, your active work. No cold starts. No "remind me what we were doing."
+
+**Your work has structure.**
+Capsules hold sources, drafts, and versions together. Work iterates toward something — then graduates when it ships. Not a pile of notes. A workshop.
+
+**See your world.**
+One command generates an interactive graph of everything — your ventures, your people, your experiments, how they connect. Context you can actually see and navigate.
+
+**Plain files. Your machine.**
+Markdown in folders. Open in any editor. No cloud. No subscription. No one decides what happens to your context but you.
+
+**Nothing between you and your AI.**
+No API calls home. No telemetry. No middleman. Just you, the model you choose, and the APIs you connect. 12 hooks run the runtime and enforce the guardrails — all local, all yours to inspect.
+
+---
 
 ## Skills
 
-| Skill | Command | Purpose |
-|-------|---------|---------|
-| World | `/alive:world` | Dashboard — see everything, route to action |
-| Load | `/alive:load` | Load a walnut — brief pack, people, capsule context |
-| Save | `/alive:save` | Checkpoint — route stash, update state, keep working |
-| Capture | `/alive:capture` | Bring external content in — store, route, extract |
-| Find | `/alive:find` | Search across all walnuts — decisions, people, files |
-| Create | `/alive:create` | Scaffold a new walnut with full structure |
-| Tidy | `/alive:tidy` | System maintenance — stale drafts, orphan files, unsigned sessions |
-| Tune | `/alive:tune` | Customize voice, rhythm, and preferences |
-| History | `/alive:history` | Session recall — what happened, when, why |
-| Mine | `/alive:mine` | Deep extraction from source material |
-| Extend | `/alive:extend` | Create custom skills, rules, and hooks |
-| Map | `/alive:map` | Interactive force-directed graph of your world |
+12 skills. All verbs. All short.
+
+| Command | What it does |
+|---------|-------------|
+| `/alive:world` | See everything — dashboard, health, route to action |
+| `/alive:load` | Load a walnut — people, capsules, context in tiers |
+| `/alive:save` | Checkpoint — route stash, update state, keep working |
+| `/alive:capture` | Bring external content in — store, route, extract |
+| `/alive:find` | Search across all walnuts — decisions, people, files |
+| `/alive:create` | Scaffold a new walnut with full structure |
+| `/alive:tidy` | System maintenance — stale drafts, orphan files, unsigned sessions |
+| `/alive:tune` | Customize voice, rhythm, and preferences |
+| `/alive:history` | Session timeline — what happened, when, why |
+| `/alive:mine` | Deep extraction from source material |
+| `/alive:extend` | Create custom skills, rules, and hooks |
+| `/alive:map` | Interactive force-directed graph of your world |
 
 ---
 
-## Architecture
+## How it works
 
-### The Runtime Injection Pattern
-
-ALIVE doesn't fine-tune a model or depend on a specific AI provider. It injects a **caretaker runtime** — a portable set of rules, skills, and hooks — into whatever agent starts a session.
-
-```
-Session starts
-  → session-new hook fires
-  → injects squirrel.core@1.0 via additionalContext
-  → any model becomes a squirrel
-  → reads the walnut's core files
-  → resumes exactly where the last session left off
-```
-
-The runtime is the role. The model is the engine. Swap Claude for GPT, Gemini, or a local model — the squirrel still knows how to read a walnut, stash context, and save cleanly. The context belongs to the file system, not the model's memory.
-
-### Closed-Loop Session Model
-
-Every session follows the same lifecycle. No unclosed loops. No orphaned state.
-
-```
-LOAD ──→ WORK ──→ SAVE ──→ (continue or exit)
-  │         │         │
-  │         │         ├─ stash routed to files
-  │         │         ├─ log entry prepended (signed)
-  │         │         ├─ now.md regenerated from scratch
-  │         │         └─ squirrel YAML signed
-  │         │
-  │         ├─ stash accumulates in conversation (not files)
-  │         ├─ capture writes raw to capsules immediately
-  │         └─ checkpoint every 5 items or 20 min (crash insurance)
-  │
-  ├─ core files read in sequence
-  ├─ previous stash recovered if unsigned
-  └─ one observation surfaced before work begins
-```
-
-If a session crashes, the next one recovers. The stash checkpoint in the squirrel YAML means nothing is lost. The unsigned entry detection means nothing is silently dropped. Every write is signed with session ID, runtime version, and engine.
-
-### The Capsule Workflow
-
-Capsules model how work actually happens with AI — you prototype, iterate, ship, and the context compounds.
-
-```
-CAPTURE ──→ DRAFT ──→ PROTOTYPE ──→ PUBLISHED ──→ DONE
-  │            │           │             │            │
-  raw/         v0.1.md     v0.2.md       v0.3.md      v1.md
-  sources      markdown    + visual      shared       graduated
-                           (HTML)        externally   to walnut root
-```
-
-Each capsule is self-contained: a companion index, versioned drafts, and raw source material. The companion tracks goal, status, sources, changelog, and work log. Multiple agents can work on different capsules concurrently — active session claims prevent collisions.
-
-Capsules pull from captured context. They contribute back to the walnut's log, insights, and tasks. Nothing exists in isolation.
-
-When a capsule ships v1, it graduates from the workshop (`_core/_capsules/`) to the walnut root — becoming live context alongside the work it produced.
-
-### Context Revival
-
-The zero-context standard means any agent can pick up any walnut cold:
-
-1. **key.md** — what this is, who's involved, how it connects
-2. **now.md** — current phase, active capsule, next action
-3. **tasks.md** — prioritized work queue with attribution
-4. **insights.md** — standing domain knowledge (confirmed evergreen)
-5. **log.md** — full history, newest first, every entry signed
-
-No briefing doc. No onboarding call. The files ARE the context. Read them in order and you're caught up. This is what makes the runtime portable — the walnut doesn't need the same model, the same session, or even the same AI platform to continue.
-
-### Hook Pipeline
-
-12 hooks enforce system guarantees mechanically — not by asking the agent to follow rules, but by blocking violations before they happen.
-
-| Hook | Trigger | Guarantee |
-|------|---------|-----------|
-| session-new | Session start | Runtime injected, squirrel entry created |
-| session-resume | Session resume | Previous stash recovered |
-| session-compact | Context compaction | Stash preserved across memory compression |
-| log-guardian | Edit/Write to log.md | Signed entries are immutable |
-| rules-guardian | Edit/Write to plugin files | System files can't be accidentally modified |
-| archive-enforcer | Bash rm/rmdir | Nothing gets deleted — only archived |
-| external-guard | Any MCP write tool | External actions require explicit confirmation |
-| pre-compact | Before compaction | Timestamp recorded for session continuity |
-| post-write | After file edit | Edit count tracked, statusline updated |
-| inbox-check | After writing now.md | Surfaces unrouted items in Inputs |
-| root-guardian | Edit/Write to world root | Non-ALIVE files blocked at root, routed to walnut |
-| context-watch | Every user prompt | Context usage monitored, save nudges at thresholds |
-
-The hooks are the hard guardrails. The rules are the soft guidance. Together they create a system where the agent can work fast without breaking things.
-
----
-
-## How It Works
-
-### The Walnut
+### The walnut
 
 A walnut is the unit of context. Any meaningful thing with its own identity, lifecycle, and history.
 
@@ -167,7 +92,7 @@ my-project/
   docs/                 live context — your actual work
 ```
 
-### The ALIVE Domains
+### The ALIVE domains
 
 Five folders. The letters are the framework.
 
@@ -179,7 +104,7 @@ Five folders. The letters are the framework.
 05_Experiments/   Testing grounds. Ideas, prototypes, explorations.
 ```
 
-### The Squirrel
+### The squirrel
 
 The caretaker runtime. Not a chatbot personality — a portable set of behaviors that any model inherits when it enters a session.
 
@@ -191,19 +116,102 @@ The caretaker runtime. Not a chatbot personality — a portable set of behaviors
 
 **The stash** is the in-session scratchpad. Decisions, tasks, notes, insight candidates, and quotes accumulate during work. Nothing writes to walnut files mid-session (except capture and capsule drafts). At save, the stash routes to the right files — log, tasks, insights, cross-walnut dispatches.
 
-## Core Principles
+### Capsules
 
-- **Context as property.** Your files, your machine, your cloud. Nothing phones home.
-- **Zero-context handoff.** Any new agent picks up any walnut cold and continues.
-- **Surface, don't decide.** The squirrel shows what it found. You choose what stays.
-- **Capture before it's lost.** What lives only in conversation dies with the session.
-- **No unclosed loops.** Every session opens cleanly, works tracked, saves completely.
+Capsules model how work actually happens with AI — you prototype, iterate, ship, and the context compounds.
+
+```
+CAPTURE ──→ DRAFT ──→ PROTOTYPE ──→ PUBLISHED ──→ DONE
+  │            │           │             │            │
+  raw/         v0.1.md     v0.2.md       v0.3.md      v1.md
+  sources      markdown    + visual      shared       graduated
+                           (HTML)        externally   to walnut root
+```
+
+Each capsule is self-contained: a companion index, versioned drafts, and raw source material. Multiple agents can work on different capsules concurrently — active session claims prevent collisions.
+
+When a capsule ships v1, it graduates from the workshop (`_core/_capsules/`) to the walnut root — becoming live context alongside the work it produced.
+
+---
+
+## Architecture
+
+### Runtime injection
+
+ALIVE doesn't fine-tune a model or depend on a specific AI provider. It injects a **caretaker runtime** — a portable set of rules, skills, and hooks — into whatever agent starts a session.
+
+```
+Session starts
+  → session-new hook fires
+  → injects squirrel.core@1.0 via additionalContext
+  → any model becomes a squirrel
+  → reads the walnut's core files
+  → resumes exactly where the last session left off
+```
+
+The runtime is the role. The model is the engine. Swap Claude for GPT, Gemini, or a local model — the squirrel still knows how to read a walnut, stash context, and save cleanly.
+
+### Session lifecycle
+
+Every session follows the same loop. No unclosed loops. No orphaned state.
+
+```
+LOAD ──→ WORK ──→ SAVE ──→ (continue or exit)
+  │         │         │
+  │         │         ├─ stash routed to files
+  │         │         ├─ log entry prepended (signed)
+  │         │         ├─ now.md regenerated from scratch
+  │         │         └─ squirrel YAML signed
+  │         │
+  │         ├─ stash accumulates in conversation (not files)
+  │         ├─ capture writes raw to capsules immediately
+  │         └─ checkpoint every 5 items or 20 min (crash insurance)
+  │
+  ├─ core files read in sequence
+  ├─ previous stash recovered if unsigned
+  └─ one observation surfaced before work begins
+```
+
+If a session crashes, the next one recovers. The stash checkpoint in the squirrel YAML means nothing is lost. Every write is signed with session ID, runtime version, and engine.
+
+### Zero-context standard
+
+Any agent can pick up any walnut cold:
+
+1. **key.md** — what this is, who's involved, how it connects
+2. **now.md** — current phase, active capsule, next action
+3. **tasks.md** — prioritized work queue with attribution
+4. **insights.md** — standing domain knowledge (confirmed evergreen)
+5. **log.md** — full history, newest first, every entry signed
+
+No briefing doc. No onboarding call. The files ARE the context. Read them in order and you're caught up.
+
+### Hook pipeline
+
+12 hooks enforce system guarantees mechanically — not by asking the agent to follow rules, but by blocking violations before they happen.
+
+| Hook | Trigger | Guarantee |
+|------|---------|-----------|
+| session-new | Session start | Runtime injected, squirrel entry created |
+| session-resume | Session resume | Previous stash recovered |
+| session-compact | Context compaction | Stash preserved across memory compression |
+| log-guardian | Edit/Write to log.md | Signed entries are immutable |
+| rules-guardian | Edit/Write to plugin files | System files can't be accidentally modified |
+| root-guardian | Edit/Write to world root | Non-ALIVE files blocked, routed to walnut |
+| archive-enforcer | Bash rm/rmdir | Nothing gets deleted — only archived |
+| external-guard | Any MCP write tool | External actions require explicit confirmation |
+| pre-compact | Before compaction | Timestamp recorded for session continuity |
+| post-write | After file edit | Edit count tracked, statusline updated |
+| inbox-check | After writing now.md | Surfaces unrouted items in Inputs |
+| context-watch | Every user prompt | Context usage monitored, save nudges at thresholds |
+
+---
 
 ## Background
 
 ALIVE was built in a lab — hundreds of hours of agent sessions across real ventures, testing context persistence, agent handoff, and the limits of what AI can reliably manage unsupervised.
 
-### What We Learned About Safety
+### What we learned about safety
 
 Agents without structural guardrails will:
 - **Overwrite state** — editing files they shouldn't, silently replacing context from previous sessions
@@ -212,13 +220,25 @@ Agents without structural guardrails will:
 - **Drop context silently** — losing stash items to session crashes, forgetting the previous `next:` action, conflating walnut scopes
 - **Fabricate confidence** — answering from "memory" instead of reading the source of truth
 
-Every hook in the system exists because one of these things happened. The log guardian makes signed entries immutable. The archive enforcer blocks deletion — you archive, you don't destroy. The external guard gates any action that touches systems outside your machine (email, GitHub, APIs) behind explicit confirmation. The rules guardian prevents the agent from modifying its own runtime. These aren't theoretical — they're scar tissue from real failures.
+Every hook in the system exists because one of these things happened. These aren't theoretical — they're scar tissue from real failures.
 
-### What We Learned About Context
+### What we learned about context
 
 The capsule architecture came from observing how work actually flows with AI: you capture raw material, draft something, iterate with feedback, ship it, and the context compounds into the next thing. The system models that workflow structurally rather than hoping the agent remembers it.
 
 The zero-context standard — the requirement that any new agent can pick up any walnut cold — forced every design decision toward explicit, file-based state. No hidden memory. No session-dependent knowledge. If it's not in the files, it doesn't exist.
+
+---
+
+## Core principles
+
+- **Context as property.** Your files, your machine, your cloud. Nothing phones home.
+- **Zero-context standard.** Any new agent picks up any walnut cold and continues.
+- **Surface, don't decide.** The squirrel shows what it found. You choose what stays.
+- **Capture before it's lost.** What lives only in conversation dies with the session.
+- **No unclosed loops.** Every session loads cleanly, works tracked, saves completely.
+
+---
 
 ## Contributing
 
@@ -227,7 +247,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 ## Community
 
 - [Worldbuilders on Skool](https://skool.com/worldbuilders) — discussion, feedback, show & tell
-- [GitHub Discussions](https://github.com/alivecomputer/marketplace/discussions) — bugs, features, ideas
+- [GitHub Discussions](https://github.com/alivecomputer/context/discussions) — bugs, features, ideas
+
+---
+
+If ALIVE makes your AI smarter, [star the repo](https://github.com/alivecomputer/context) — it helps others find it.
 
 ## License
 

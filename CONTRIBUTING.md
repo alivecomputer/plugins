@@ -56,7 +56,7 @@ Templates in `plugins/alive/templates/` define the schema for system files. The 
 
 ## Reporting Issues
 
-Use [GitHub Issues](https://github.com/alivecomputer/marketplace/issues) for bugs and feature requests. Use the provided templates.
+Use [GitHub Issues](https://github.com/alivecomputer/context/issues) for bugs and feature requests. Use the provided templates.
 
 ## Community
 
