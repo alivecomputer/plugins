@@ -11,7 +11,7 @@ ALIVE is a Claude Code plugin that operates on **local files only**. All context
 
 ## What the Hooks Guarantee
 
-The plugin ships 13 hooks that enforce security guarantees mechanically — not by trusting the agent to follow rules, but by blocking violations before they execute.
+The plugin ships 12 hooks that enforce security guarantees mechanically — not by trusting the agent to follow rules, but by blocking violations before they execute.
 
 | Hook | Guarantee |
 |------|-----------|

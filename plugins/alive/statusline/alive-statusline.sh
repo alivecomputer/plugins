@@ -98,7 +98,7 @@ if [ "$COST" = "\$0.00" ]; then
   TIPS=(
     "${COPPER}your context compounds from here${RESET}"
     "${DIM}/alive:world${RESET} ${DIM}— view your world${RESET}"
-    "${DIM}/alive:open${RESET} ${DIM}— lock in on one walnut${RESET}"
+    "${DIM}/alive:load${RESET} ${DIM}— lock in on one walnut${RESET}"
     "${DIM}/alive:save${RESET} ${DIM}— checkpoint, compound context${RESET}"
     "${DIM}/alive:tidy${RESET} ${DIM}— clean your world${RESET}"
     "${DIM}/alive:capture${RESET} ${DIM}— bring context in${RESET}"

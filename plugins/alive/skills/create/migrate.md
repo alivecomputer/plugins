@@ -620,7 +620,7 @@ If a subagent failed, report the failure and offer to retry that specific subage
 
 **The housekeeping nudge is strong, not a suggestion.** The walnut is functional but not guaranteed fully conformant. Migrated content (especially live context folders copied straight across) may have markdown files without YAML frontmatter, references without companions, inconsistent naming, or other convention violations. Housekeeping is the conformance pass. It should run in a new session to get a clean context window.
 
-If the human says "open" — invoke `alive:open` flow.
+If the human says "open" — invoke `alive:load` flow.
 If "done" — end.
 
 ---

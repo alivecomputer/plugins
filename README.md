@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="hero.gif" alt="ALIVE — Capture, Compound, Share" width="100%">
+  <img src="alivecomputer-logo.png" alt="Alive Computer" width="600">
 </p>
 
 [![Version](https://img.shields.io/badge/version-1.0.1--beta-copper)](https://github.com/alivecomputer/claude-plugins/releases)
@@ -26,7 +26,7 @@ Then start a session and type `/alive:world`.
 
 - **12 skills** for managing your world
 - **6 rules** that define caretaker behavior
-- **13 hooks** for session lifecycle, log protection, archive enforcement, stash preservation
+- **12 hooks** for session lifecycle, log protection, archive enforcement, stash preservation
 - **Templates** for walnuts, capsules, companions, and system files
 - **Onboarding** that scaffolds your world on first run
 
@@ -35,7 +35,7 @@ Then start a session and type `/alive:world`.
 | Skill | Command | Purpose |
 |-------|---------|---------|
 | World | `/alive:world` | Dashboard — see everything, route to action |
-| Open | `/alive:open` | Open one walnut, load context, focus |
+| Load | `/alive:load` | Load a walnut — brief pack, people, capsule context |
 | Save | `/alive:save` | Checkpoint — route stash, update state, keep working |
 | Capture | `/alive:capture` | Bring external content in — store, route, extract |
 | Find | `/alive:find` | Search across all walnuts — decisions, people, files |
@@ -121,7 +121,7 @@ No briefing doc. No onboarding call. The files ARE the context. Read them in ord
 
 ### Hook Pipeline
 
-13 hooks enforce system guarantees mechanically — not by asking the agent to follow rules, but by blocking violations before they happen.
+12 hooks enforce system guarantees mechanically — not by asking the agent to follow rules, but by blocking violations before they happen.
 
 | Hook | Trigger | Guarantee |
 |------|---------|-----------|
@@ -135,6 +135,7 @@ No briefing doc. No onboarding call. The files ARE the context. Read them in ord
 | pre-compact | Before compaction | Timestamp recorded for session continuity |
 | post-write | After file edit | Edit count tracked, statusline updated |
 | inbox-check | After writing now.md | Surfaces unrouted items in Inputs |
+| root-guardian | Edit/Write to world root | Non-ALIVE files blocked at root, routed to walnut |
 | context-watch | Every user prompt | Context usage monitored, save nudges at thresholds |
 
 The hooks are the hard guardrails. The rules are the soft guidance. Together they create a system where the agent can work fast without breaking things.

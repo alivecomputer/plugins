@@ -7,7 +7,7 @@ user-invocable: true
 
 Scaffold a new walnut — any type, any ALIVE domain. Understand it first, map where its context lives, then scaffold. Optionally bring in existing content (Step 7 — only if the human has files to migrate).
 
-Not a setup wizard (that's `world/setup.md` — first-time only). Not opening an existing walnut (that's `alive:open`).
+Not a setup wizard (that's `world/setup.md` — first-time only). Not opening an existing walnut (that's `alive:load`).
 
 ---
 

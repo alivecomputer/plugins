@@ -232,7 +232,7 @@ SESSION START
   │
   ├─ Hook: session-new.sh (creates squirrel entry, reads prefs)
   │
-  ├─ The human invokes alive:open or alive:world
+  ├─ The human invokes alive:load or alive:world
   │
   ▼
 OPEN

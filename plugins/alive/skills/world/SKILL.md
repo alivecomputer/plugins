@@ -180,7 +180,7 @@ What's been happening across the world. A pulse check.
 
 ## After Dashboard
 
-- **Number** → open that walnut (invoke `alive:open`)
+- **Number** → open that walnut (invoke `alive:load`)
 - **"just chat"** → freestyle conversation, no walnut focus
 - **"tidy"** → invoke `alive:tidy`
 - **"find X"** → invoke `alive:find`

@@ -48,7 +48,7 @@ Do not respond about a walnut without reading its core files. Never guess at fil
 
 ```
 /alive:world      see your world
-/alive:open       open a walnut
+/alive:load       load a walnut (prev. open)
 /alive:save       checkpoint — route stash, update state
 /alive:capture    context in — store, route
 /alive:find       search across walnuts

@@ -87,7 +87,7 @@ Read the file. It contains structured sections with YAML-like data:
 ```markdown
 ---
 type: world-seed
-version: 1.0.0-beta
+version: 1.0.1-beta
 created: 2026-03-10T12:00:00Z
 generator: world-builder-html
 ---
@@ -560,10 +560,10 @@ Display this summary. Fill in actual values for every placeholder.
 │  People: {{comma-separated list of people names, or "none yet"}}
 │  Context sources: {{comma-separated list, or "none yet"}}
 │
-│  9 skills ready:
-│    world · open · save · capture · find · create · housekeeping · config · recall
+│  12 skills ready:
+│    world · load · save · capture · find · create · tidy · tune · history · mine · extend · map
 │
-│  Say "open {{first-walnut-name}}" to start working.
+│  Say "load {{first-walnut-name}}" to start working.
 │  Say "world" anytime to see everything.
 │
 │  → Build your world.

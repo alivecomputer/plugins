@@ -29,7 +29,7 @@ All notable changes to the ALIVE plugin are documented here.
 ### Added
 - **12 skills:** world, open, save, capture, find, create, tidy, tune, history, mine, extend, map
 - **6 foundational rules:** capsules, human, squirrels, standards, voice, world
-- **13 hooks:** session lifecycle, log guardian, rules guardian, archive enforcer, external guard, context watch, inbox check, pre-compact, post-write
+- **12 hooks:** session lifecycle, log guardian, rules guardian, archive enforcer, external guard, context watch, inbox check, pre-compact, post-write
 - **Squirrel caretaker runtime** — stash mechanic, session signing, zero-context handoff
 - **ALIVE framework** — 5-domain folder structure (Archive, Life, Inputs, Ventures, Experiments)
 - **Walnut system** — 5 core files (key.md, now.md, log.md, insights.md, tasks.md)
